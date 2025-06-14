@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Impulse Purchase Gallery - A Museum of Beautiful Mistakes</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Nosifer&family=Butcherman&family=Inter:wght@300;400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 25%, #0f0f23 50%, #1a0a1a 75%, #0a0a0a 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: #e0e0e0;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            background-image: 
+                radial-gradient(circle at 20% 50%, #ff006e 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, #8338ec 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, #3a86ff 0%, transparent 50%);
+            animation: noiseShift 3s ease-in-out infinite alternate;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        @keyframes noiseShift {
+            0% { transform: translateX(-5px) translateY(-5px); }
+            100% { transform: translateX(5px) translateY(5px); }
+        }
+        
+        .header {
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+        
+        .title {
+            font-family: 'Butcherman', cursive;
+            font-size: clamp(2rem, 5vw, 4rem);
+            color: #ff006e;
+            text-shadow: 
+                2px 2px 0px #8338ec,
+                4px 4px 0px #3a86ff,
+                6px 6px 10px rgba(0,0,0,0.8);
+            margin-bottom: 1rem;
+            animation: titleGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes titleGlow {
+            0% { filter: brightness(1) saturate(1); }
+            100% { filter: brightness(1.2) saturate(1.3); }
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #b8b8b8;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tagline {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 2rem;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            text-align: center;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-width: 120px;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(255, 0, 110, 0.3);
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ff006e;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: #aaa;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .sorting-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .sort-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: #ccc;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .sort-btn:hover, .sort-btn.active {
+            background: rgba(255, 0, 110, 0.2);
+            border-color: rgba(255, 0, 110, 0.5);
+            color: #ff006e;
+        }
+        
+        .gallery {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        
+        .gallery-item {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s;
+        }
+        
+        .gallery-item:hover::before {
+            left: 100%;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 30px rgba(255, 0, 110, 0.2);
+            border-color: rgba(255, 0, 110, 0.3);
+        }
+        
+        .item-emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+            text-align: center;
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+        }
+        
+        .item-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #ff006e;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        
+        .item-description {
+            font-size: 0.9rem;
+            color: #ccc;
+            line-height: 1.4;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .item-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #8338ec;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .item-quote {
+            font-style: italic;
+            color: #999;
+            font-size: 0.85rem;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 1rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-item:hover .item-quote {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .add-item-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 0, 110, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .add-item-btn:hover {
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 15px 40px rgba(255, 0, 110, 0.6);
+        }
+        
+        .therapy-mode {
+            position: fixed;
+            bottom: 8rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3a86ff, #06ffa5);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(58, 134, 255, 0.4);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .therapy-mode:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 40px rgba(58, 134, 255, 0.6);
+        }
+        
+        .hyperfocus-mode {
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(131, 56, 236, 0.8);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .hyperfocus-mode:hover {
+            background: rgba(131, 56, 236, 1);
+            transform: scale(1.05);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            padding: 2rem;
+        }
+        
+        .modal-content {
+            max-width: 500px;
+            margin: 5% auto;
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+        
+        .hyperfocus-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            z-index: 5000;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .hyperfocus-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
+            border-radius: 20px;
+            padding: 2rem;
+            border: 2px solid #8338ec;
+            box-shadow: 0 20px 60px rgba(131, 56, 236, 0.4);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .dopamine-tracker {
+            background: rgba(255, 0, 110, 0.1);
+            border: 1px solid rgba(255, 0, 110, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .dopamine-meter {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+            position: relative;
+        }
+        
+        .dopamine-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+        
+        .dopamine-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .regret-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .category-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category-card:hover {
+            background: rgba(255, 0, 110, 0.1);
+            border-color: rgba(255, 0, 110, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .category-emoji {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .category-title {
+            font-weight: 600;
+            color: #ff006e;
+            margin-bottom: 0.5rem;
+        }
+        
+        .category-count {
+            color: #8338ec;
+            font-size: 0.9rem;
+        }
+        
+        .adhd-tips {
+            background: rgba(58, 134, 255, 0.1);
+            border: 1px solid rgba(58, 134, 255, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .tip-carousel {
+            position: relative;
+            height: 60px;
+            overflow: hidden;
+        }
+        
+        .tip-item {
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            color: #ccc;
+            font-style: italic;
+            text-align: center;
+        }
+        
+        .tip-item.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .financial-damage-chart {
+            margin: 2rem 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .damage-bars {
+            display: flex;
+            align-items: end;
+            height: 100px;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .damage-bar {
+            flex: 1;
+            background: linear-gradient(to top, #ff006e, #8338ec);
+            border-radius: 4px 4px 0 0;
+            min-height: 10px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .damage-bar:hover {
+            transform: scaleY(1.1);
+            box-shadow: 0 0 15px rgba(255, 0, 110, 0.5);
+        }
+        
+        .damage-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: #999;
+            text-align: center;
+        }
+        
+        .confession-booth {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 0, 110, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            position: relative;
+        }
+        
+        .confession-prompt {
+            color: #ff006e;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .confession-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 0.8rem;
+            color: white;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .confession-input:focus {
+            outline: none;
+            border-color: #ff006e;
+            box-shadow: 0 0 15px rgba(255, 0, 110, 0.3);
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .close-btn:hover {
+            color: #ff006e;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #ccc;
+            font-weight: 500;
+        }
+        
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: #fff;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #ff006e;
+            box-shadow: 0 0 15px rgba(255, 0, 110, 0.3);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #ff006e, #8338ec);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 0, 110, 0.4);
+        }
+        
+        .shame-counter {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 0, 110, 0.3);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            min-width: 150px;
+        }
+        
+        .shame-title {
+            font-size: 0.8rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .shame-amount {
+            font-size: 1.5rem;
+            color: #ff006e;
+            font-weight: 600;
+        }
+        
+        .floating-quotes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -2;
+        }
+        
+        .floating-quote {
+            position: absolute;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.1);
+            font-style: italic;
+            animation: float 20s linear infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.3; }
+            90% { opacity: 0.3; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+        
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            right: -300px;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #06ffa5, #3a86ff);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: right 0.5s ease;
+            z-index: 3000;
+            max-width: 250px;
+        }
+        
+        .achievement-popup.show {
+            right: 2rem;
+        }
+        
+        .achievement-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .achievement-desc {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+        
+        .hyperfocus-active {
+            filter: blur(2px) brightness(0.3);
+            pointer-events: none;
+        }
+        
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .shame-counter {
+                position: static;
+                margin: 1rem auto;
+                width: fit-content;
+            }
+            
+            .hyperfocus-mode {
+                position: static;
+                margin: 1rem auto;
+                width: fit-content;
+            }
+        }
+        
+        .easter-egg {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .easter-egg:hover {
+            color: #ff006e;
+        }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="floating-quotes"></div>
+    
+    <div class="shame-counter">
+        <div class="shame-title">Total Regret</div>
+        <div class="shame-amount">$<span id="totalShame">2,847</span></div>
+    </div>
+    
+    <div class="hyperfocus-mode" onclick="toggleHyperfocus()">
+        🧠 HYPERFOCUS MODE
+    </div>
+    
+    <div class="hyperfocus-overlay" id="hyperfocusOverlay">
+        <div class="hyperfocus-content">
+            <h2 style="color: #8338ec; text-align: center; margin-bottom: 2rem;">
+                Deep Dive: Your Shopping Psychology
+            </h2>
+            
+            <div class="dopamine-tracker">
+                <h3 style="color: #ff006e; margin-bottom: 1rem;">Current Dopamine Level</h3>
+                <div class="dopamine-meter">
+                    <div class="dopamine-fill" id="dopamineFill" style="width: 34%"></div>
+                </div>
+                <p style="color: #ccc; font-size: 0.9rem;">
+                    Dangerously low. Recommend immediate retail intervention.
+                </p>
+            </div>
+            
+            <div class="regret-categories">
+                <div class="category-card" onclick="filterByCategory('hobbies')">
+                    <span class="category-emoji">🎨</span>
+                    <div class="category-title">Abandoned Hobbies</div>
+                    <div class="category-count">23 items</div>
+                </div>
+                <div class="category-card" onclick="filterByCategory('productivity')">
+                    <span class="category-emoji">📋</span>
+                    <div class="category-title">Productivity Theater</div>
+                    <div class="category-count">17 items</div>
+                </div>
+                <div class="category-card" onclick="filterByCategory('comfort')">
+                    <span class="category-emoji">🧸</span>
+                    <div class="category-title">Emotional Support Objects</div>
+                    <div class="category-count">31 items</div>
+                </div>
+                <div class="category-card" onclick="filterByCategory('midnight')">
+                    <span class="category-emoji">🌙</span>
+                    <div class="category-title">3AM Decisions</div>
+                    <div class="category-count">42 items</div>
+                </div>
+            </div>
+            
+            <div class="adhd-tips">
+                <h3 style="color: #3a86ff; margin-bottom: 1rem; text-align: center;">
+                    Probably Unhelpful Tips
+                </h3>
+                <div class="tip-carousel" id="tipCarousel">
+                    <div class="tip-item active">"Just make a list" - Person who has never made 47 lists and lost them all</div>
+                    <div class="tip-item">"Try budgeting" - Someone who clearly doesn't understand impulse physics</div>
+                    <div class="tip-item">"Sleep on it" - Bold of you to assume I sleep</div>
+                    <div class="tip-item">"Do you really need it?" - My cart says yes, my bank account says no</div>
+                    <div class="tip-item">"Practice self-control" - I practiced. I'm still bad at it.</div>
+                </div>
+            </div>
+            
+            <div class="financial-damage-chart">
+                <h3 style="color: #ff006e; margin-bottom: 1rem; text-align: center;">
+                    Monthly Damage Report
+                </h3>
+                <div class="damage-bars">
+                    <div class="damage-bar" style="height: 60%">
+                        <div class="damage-label">Jan</div>
+                    </div>
+                    <div class="damage-bar" style="height: 80%">
+                        <div class="damage-label">Feb</div>
+                    </div>
+                    <div class="damage-bar" style="height: 45%">
+                        <div class="damage-label">Mar</div>
+                    </div>
+                    <div class="damage-bar" style="height: 95%">
+                        <div class="damage-label">Apr</div>
+                    </div>
+                    <div class="damage-bar" style="height: 70%">
+                        <div class="damage-label">May</div>
+                    </div>
+                    <div class="damage-bar" style="height: 100%">
+                        <div class="damage-label">Jun</div>
+                    </div>
+                </div>
+                <p style="color: #999; font-size: 0.8rem; text-align: center;">
+                    *June includes the "treat yourself" spiral of May 31st
+                </p>
+            </div>
+            
+            <div class="confession-booth">
+                <div class="confession-prompt">
+                    What's your most recent shopping sin? (Anonymous, we promise*)
+                </div>
+                <textarea class="confession-input" placeholder="I bought a $300 espresso machine because I thought it would make me a morning person..."></textarea>
+                <p style="color: #666; font-size: 0.7rem; margin-top: 0.5rem; text-align: center;">
+                    *We're judging, but lovingly
+                </p>
+            </div>
+            
+            <button class="close-btn" onclick="toggleHyperfocus()" style="top: 1rem; right: 1.5rem;">&times;</button>
+        </div>
+    </div>
+    
+    <div class="header">
+        <h1 class="title">The Impulse Purchase Gallery</h1>
+        <p class="subtitle">A Museum of Beautiful Mistakes</p>
+        <p class="tagline">"Where dopamine goes to die, but at least it's aesthetic"</p>
+        
+        <div class="stats">
+            <div class="stat">
+                <span class="stat-number">847</span>
+                <span class="stat-label">Regrets</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">23</span>
+                <span class="stat-label">Still Unopened</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">∞</span>
+                <span class="stat-label">Excuses Made</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="sorting-controls">
+        <button class="sort-btn active" onclick="sortGallery('recent')">Most Recent Mistakes</button>
+        <button class="sort-btn" onclick="sortGallery('expensive')">Biggest Regrets</button>
+        <button class="sort-btn" onclick="sortGallery('random')">Surprise Me</button>
+        <button class="sort-btn" onclick="sortGallery('alphabetical')">A-Z of Shame</button>
+    </div>
+    
+    <div class="gallery" id="gallery">
+        <!-- Gallery items will be populated by JavaScript -->
+    </div>
+    
+    <button class="add-item-btn" onclick="openModal()">+</button>
+    <button class="therapy-mode" onclick="startTherapyMode()" title="Therapy Mode">🛋️</button>
+    
+    <div class="modal" id="addItemModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h2 style="color: #ff006e; margin-bottom: 1.5rem; text-align: center;">Confess Your Sins</h2>
+            <form id="addItemForm">
+                <div class="form-group">
+                    <label class="form-label">What did you buy?</label>
+                    <input type="text" class="form-input" id="itemName" placeholder="40 highlighters, a fog machine, existential dread..." required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Why though?</label>
+                    <textarea class="form-textarea" id="itemDescription" placeholder="It seemed like a good idea at 3am..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Damage to wallet</label>
+                    <input type="number" class="form-input" id="itemPrice" placeholder="69.99" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Emoji representation</label>
+                    <input type="text" class="form-input" id="itemEmoji" placeholder="🦝" maxlength="2">
+                </div>
+                <button type="submit" class="submit-btn">Add to Hall of Shame</button>
+            </form>
+        </div>
+    </div>
+    
+    <div class="easter-egg" onclick="triggerEasterEgg()">
+        *whispers* click me for existential crisis
+    </div>
+    
+    <div class="achievement-popup" id="achievementPopup">
+        <div class="achievement-title" id="achievementTitle">Achievement Unlocked!</div>
+        <div class="achievement-desc" id="achievementDesc">You've reached a new level of beautiful self-destruction</div>
+    </div>
+
+    <script>
+        // Initial gallery items with more chaotic energy
+        const galleryItems = [
+            {
+                emoji: "✨",
+                title: "40 Highlighters for Unused Planner",
+                description: "Bought a planner to get my life together. Bought highlighters to make it pretty. Planner remains untouched. Highlighters judge me silently from their drawer of shame.",
+                price: 47.99,
+                quote: "Still better than therapy. Probably."
+            },
+            {
+                emoji: "🦝",
+                title: "Raccoon Plush Named 'Accountability'",
+                description: "Thought having a physical representation of accountability would help. Accountability now sits in the corner, also procrastinating and judging my life choices.",
+                price: 24.99,
+                quote: "We're both disappointments, but at least we're cute."
+            },
+            {
+                emoji: "🌫️",
+                title: "Fog Machine 'For Ambiance'",
+                description: "To make my apartment feel more mysterious and atmospheric. Now I can't find anything and my smoke alarm has trust issues. Neighbors think I'm running a nightclub.",
+                price: 89.99,
+                quote: "Ambiance achieved. Visibility optional. Regret guaranteed."
+            },
+            {
+                emoji: "📖",
+                title: "Executive Function Book (Unopened)",
+                description: "Ironically, lack of executive function prevents me from reading book about executive function. The paradox is not lost on me, unlike the book which is lost under a pile of other unused self-help materials.",
+                price: 19.99,
+                quote: "The real executive function was the procrastination we made along the way."
+            },
+            {
+                emoji: "🧸",
+                title: "Therapy Llama (Emergency Dopamine)",
+                description: "For when human interaction becomes too much but you still need something to talk to. Llama is an excellent listener and never judges my Amazon cart.",
+                price: 34.99,
+                quote: "Cheaper than actual therapy, twice as fluffy, zero uncomfortable questions."
+            },
+            {
+                emoji: "🎯",
+                title: "Habit Tracker App Subscription",
+                description: "Paid for premium features to track habits. Only habit I've consistently tracked is forgetting to use the app. The irony sustains me more than the app ever did.",
+                price: 59.99,
+                quote: "The only thing I'm consistent at is inconsistency."
+            },
+            {
+                emoji: "🍄",
+                title: "Mushroom Growing Kit",
+                description: "Thought I'd become one with nature and grow my own food. Mushrooms died. I'm apparently bad at keeping fungus alive. Peak achievement unlocked: disappointing mold.",
+                price: 29.99,
+                quote: "Turns out I can kill anything, even things that grow in the dark."
+            },
+            {
+                emoji: "🎨",
+                title: "Art Supplies for 'Creative Phase'",
+                description: "Lasted exactly 3 days. Now I have $200 worth of supplies staring at me judgmentally every time I walk by. They've formed a union of disappointment.",
+                price: 199.99,
+                quote: "My creativity peaked at stick figures and I peaked at denial."
+            },
+            {
+                emoji: "🎧",
+                title: "Noise-Cancelling Headphones for Focus",
+                description: "To block out distractions and become a productivity machine. Now I use them to better hear my own thoughts spiraling into existential dread while I online shop.",
+                price: 149.99,
+                quote: "The only thing they block out is my financial responsibility."
+            },
+            {
+                emoji: "🕯️",
+                title: "47 Scented Candles for 'Wellness'",
+                description: "Each one was going to transform my space into a zen sanctuary. Now my apartment smells like a Bath & Body Works had a nervous breakdown. The wellness is questionable.",
+                price: 312.83,
+                quote: "Nothing says inner peace like crippling debt and overwhelming fragrance choices."
+            },
+            {
+                emoji: "📚",
+                title: "Language Learning App (7 Languages)",
+                description: "Was going to become a polyglot intellectual. Learned how to say 'I have commitment issues' in 7 languages. The most honest thing I've ever accomplished.",
+                price: 89.99,
+                quote: "Fluent in self-sabotage, conversational in regret."
+            },
+            {
+                emoji: "🏃‍♀️",
+                title: "Running Gear for 'New Me'",
+                description: "Complete outfit for my fitness transformation. Shoes have never touched pavement. They're decorative now, like my dreams of being athletic.",
+                price: 247.50,
+                quote: "The only marathon I'm running is away from my responsibilities."
+            }
+        ];
+
+        let totalShame = 2847;
+        let currentItems = [...galleryItems];
+        let hyperfocusActive = false;
+        let currentSort = 'recent';
+        let achievements = {
+            firstPurchase: false,
+            bigSpender: false,
+            collectionComplete: false,
+            therapyMode: false,
+            existentialCrisis: false,
+            chaosMode: false
+        };
+
+        function renderGallery() {
+            const gallery = document.getElementById('gallery');
+            gallery.innerHTML = '';
+            
+            currentItems.forEach((item, index) => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'gallery-item';
+                itemElement.innerHTML = `
+                    <span class="item-emoji">${item.emoji}</span>
+                    <h3 class="item-title">${item.title}</h3>
+                    <p class="item-description">${item.description}</p>
+                    <div class="item-price">${item.price}</div>
+                    <div class="item-quote">"${item.quote}"</div>
+                `;
+                
+                // Add click animation and chaos
+                itemElement.addEventListener('click', () => {
+                    itemElement.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        itemElement.style.transform = '';
+                    }, 150);
+                    
+                    // Expanded sarcastic notifications
+                    const comments = [
+                        "We've all been there, friend.",
+                        "At least you're consistent in your inconsistency.",
+                        "Your bank account just filed a restraining order.",
+                        "Dopamine is a hell of a drug, isn't it?",
+                        "This is why we can't have nice things... or savings.",
+                        "The audacity of having hobbies and dreams.",
+                        "Self-care is buying things, right? RIGHT?",
+                        "Money can't buy happiness, but it can buy regret.",
+                        "Your future self is writing angry letters you'll never receive.",
+                        "Peak human decision-making right here, folks.",
+                        "Amazon's favorite customer has entered the chat.",
+                        "This is what happens when ADHD meets capitalism.",
+                        "Your impulse control has filed for unemployment.",
+                        "Marie Kondo is crying somewhere because of you.",
+                        "The minimalists are writing strongly worded blog posts.",
+                        "Your cart has abandonment issues now.",
+                        "Somewhere, a financial advisor just felt a disturbance in the force.",
+                        "Your credit card company sends you birthday cards.",
+                        "The definition of 'treating yourself' has evolved.",
+                        "Your abandoned hobbies are starting a support group."
+                    ];
+                    
+                    showNotification(comments[Math.floor(Math.random() * comments.length)]);
+                    updateDopamineMeter();
+                });
+                
+                gallery.appendChild(itemElement);
+            });
+        }
+
+        function toggleHyperfocus() {
+            hyperfocusActive = !hyperfocusActive;
+            const overlay = document.getElementById('hyperfocusOverlay');
+            const body = document.body;
+            
+            if (hyperfocusActive) {
+                overlay.style.display = 'block';
+                body.classList.add('hyperfocus-active');
+                startTipCarousel();
+                
+                if (!achievements.therapyMode) {
+                    triggerAchievement("Deep Dive Achieved", "You've entered hyperfocus mode. There's no escape now.");
+                    achievements.therapyMode = true;
+                }
+            } else {
+                overlay.style.display = 'none';
+                body.classList.remove('hyperfocus-active');
+            }
+        }
+
+        function startTipCarousel() {
+            const tips = document.querySelectorAll('.tip-item');
+            let currentTip = 0;
+            
+            const carousel = setInterval(() => {
+                if (!hyperfocusActive) {
+                    clearInterval(carousel);
+                    return;
+                }
+                tips[currentTip].classList.remove('active');
+                currentTip = (currentTip + 1) % tips.length;
+                tips[currentTip].classList.add('active');
+            }, 3000);
+        }
+
+        function updateDopamineMeter() {
+            const fill = document.getElementById('dopamineFill');
+            if (!fill) return;
+            
+            const currentWidth = parseInt(fill.style.width) || 34;
+            const newWidth = Math.max(5, Math.min(100, currentWidth + Math.random() * 30 - 10));
+            fill.style.width = newWidth + '%';
+            
+            // Update meter color based on level
+            if (newWidth < 25) {
+                fill.style.background = 'linear-gradient(90deg, #ff006e, #ff4757)';
+            } else if (newWidth < 60) {
+                fill.style.background = 'linear-gradient(90deg, #ff006e, #8338ec, #3a86ff)';
+            } else {
+                fill.style.background = 'linear-gradient(90deg, #06ffa5, #3a86ff, #8338ec)';
+            }
+        }
+
+        function sortGallery(method) {
+            // Update active button
+            document.querySelectorAll('.sort-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            currentSort = method;
+            
+            switch(method) {
+                case 'recent':
+                    currentItems = [...galleryItems];
+                    break;
+                case 'expensive':
+                    currentItems.sort((a, b) => b.price - a.price);
+                    break;
+                case 'random':
+                    currentItems = [...galleryItems].sort(() => Math.random() - 0.5);
+                    break;
+                case 'alphabetical':
+                    currentItems.sort((a, b) => a.title.localeCompare(b.title));
+                    break;
+            }
+            
+            renderGallery();
+        }
+
+        function filterByCategory(category) {
+            const categoryFilters = {
+                hobbies: ['art', 'craft', 'creative', 'supplies', 'kit', 'drawing', 'painting'],
+                productivity: ['planner', 'organizer', 'tracker', 'book', 'app', 'habit', 'executive'],
+                comfort: ['plush', 'blanket', 'comfort', 'therapy', 'support', 'llama', 'emotional'],
+                midnight: ['fog', 'ambient', 'mysterious', 'late night', '3am', 'candle', 'mood']
+            };
+            
+            const keywords = categoryFilters[category] || [];
+            const filtered = galleryItems.filter(item => 
+                keywords.some(keyword => 
+                    item.title.toLowerCase().includes(keyword) ||
+                    item.description.toLowerCase().includes(keyword)
+                )
+            );
+            
+            currentItems = filtered.length > 0 ? filtered : galleryItems;
+            renderGallery();
+            
+            showNotification(`Filtered by ${category}. Your patterns are showing, and they're concerning.`);
+            toggleHyperfocus(); // Close hyperfocus after filtering
+        }
+
+        function startTherapyMode() {
+            const therapyQuestions = [
+                "Let's talk about your relationship with Amazon Prime... and why you consider Jeff Bezos a close personal friend.",
+                "When did you first realize you were using shopping as a coping mechanism? Was it before or after the 47th candle?",
+                "How does it feel when the package arrives and the dopamine immediately wears off like a sugar crash?",
+                "Tell me about your most regrettable 3am purchase. And yes, we have all night.",
+                "What would your bank account say if it could speak? Would it need therapy too?",
+                "Do you think your abandoned hobbies hold a grudge? Have they started a group chat without you?",
+                "How many planners is too many planners? Follow-up: Why didn't that stop you at planner number 12?",
+                "What's the longest you've gone without checking your cart? Don't lie, I can see your browser history.",
+                "If your impulse purchases formed a support group, what would they discuss? Your commitment issues?",
+                "Rate your last shopping decision on a scale of 'necessary' to 'what have I done with my life?'",
+                "Do you ever talk to your purchases? Do they talk back? Should we be concerned?",
+                "When was the last time you used something you bought within 48 hours of purchase?",
+                "Your fog machine... really? In a studio apartment? Explain yourself.",
+                "How does it feel knowing your raccoon plush has better emotional intelligence than you do?"
+            ];
+            
+            const question = therapyQuestions[Math.floor(Math.random() * therapyQuestions.length)];
+            
+            const therapyOverlay = document.createElement('div');
+            therapyOverlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.95);
+                color: #06ffa5;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.3rem;
+                text-align: center;
+                padding: 2rem;
+                z-index: 4000;
+                opacity: 0;
+                transition: opacity 0.5s ease;
+                cursor: pointer;
+                line-height: 1.6;
+            `;
+            therapyOverlay.innerHTML = `
+                <div>
+                    <div style="font-size: 3rem; margin-bottom: 2rem; animation: pulse 2s infinite;">🛋️</div>
+                    <div style="max-width: 600px;">
+                        "${question}"
+                    </div>
+                    <br><br>
+                    <small style="color: #666; font-size: 0.8rem;">
+                        *$200/hr, insurance not accepted, payment plans available through Amazon Pay*<br>
+                        *click anywhere to avoid confronting reality*
+                    </small>
+                </div>
+                <style>
+                    @keyframes pulse {
+                        0%, 100% { transform: scale(1); }
+                        50% { transform: scale(1.1); }
+                    }
+                </style>
+            `;
+            
+            document.body.appendChild(therapyOverlay);
+            setTimeout(() => therapyOverlay.style.opacity = '1', 100);
+            
+            therapyOverlay.addEventListener('click', () => {
+                therapyOverlay.style.opacity = '0';
+                setTimeout(() => document.body.removeChild(therapyOverlay), 500);
+            });
+            
+            if (!achievements.therapyMode) {
+                setTimeout(() => {
+                    triggerAchievement("Self-Awareness Unlocked", "You've confronted your shopping demons. How's that working out for you?");
+                    achievements.therapyMode = true;
+                }, 3000);
+            }
+        }
+
+        function triggerAchievement(title, description) {
+            const popup = document.getElementById('achievementPopup');
+            const titleEl = document.getElementById('achievementTitle');
+            const descEl = document.getElementById('achievementDesc');
+            
+            titleEl.textContent = title;
+            descEl.textContent = description;
+            
+            popup.classList.add('show');
+            
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 4000);
+        }
+
+        // Enhanced existential crisis with maximum psychological damage
+        function triggerEasterEgg() {
+            const existentialCrises = [
+                "What if all your purchases are just attempts to fill the void left by your abandoned childhood dreams and the crushing weight of adult responsibilities?",
+                "Your abandoned hobbies are forming a support group and they're writing a strongly worded letter to your therapist about enabling behavior.",
+                "That planner you bought is still optimistic about your potential. It believes in you more than you believe in yourself, which is honestly kind of sad.",
+                "Your bank statement reads like a psychological profile written by someone having a complete nervous breakdown at 3am in a Target parking lot.",
+                "Every 'Add to Cart' click is a tiny act of rebellion against financial responsibility and your future self who will inevitably hate you for this decision.",
+                "You're not shopping, you're curating a museum of intentions that future archaeologists will study to understand the fall of civilization.",
+                "Your future self is writing strongly worded letters you'll never receive because past you has commitment issues with opening mail.",
+                "Somewhere, a minimalist is crying because of your existence and Marie Kondo is reconsidering her entire life philosophy.",
+                "Your dopamine receptors have unionized and they're demanding better working conditions and health benefits.",
+                "That raccoon plush named Accountability is probably the most honest relationship you've ever had with another living being.",
+                "Your credit card company sends you holiday cards because you're basically family now and they're concerned about your wellbeing.",
+                "Amazon's algorithm knows you better than your therapist and it's significantly more enabling of your destructive behaviors.",
+                "Your shopping cart has seen more action than your dating life and it's somehow less disappointing but equally expensive.",
+                "You've single-handedly kept the economy afloat through the power of poor impulse control and emotional spending.",
+                "Your abandoned purchases are like digital pets that you fed once, named, and then forgot about forever in the corner of your room."
+            ];
+            
+            const crisis = existentialCrises[Math.floor(Math.random() * existentialCrises.length)];
+            
+            // Create increasingly dramatic overlay with more visual chaos
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(circle, rgba(0,0,0,0.95) 0%, rgba(25,0,25,0.98) 100%);
+                color: #ff006e;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.4rem;
+                text-align: center;
+                padding: 2rem;
+                z-index: 4000;
+                opacity: 0;
+                transition: opacity 0.8s ease;
+                cursor: pointer;
+                font-style: italic;
+                line-height: 1.6;
+            `;
+            
+            overlay.innerHTML = `
+                <div style="max-width: 700px; position: relative;">
+                    <div style="font-size: 4rem; margin-bottom: 2rem; animation: pulse 2s infinite;">💭</div>
+                    <div style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+                        "${crisis}"
+                    </div>
+                    <br><br>
+                    <small style="color: #666; font-size: 0.8rem; font-style: normal;">
+                        *click anywhere to return to your regularly scheduled denial and avoidance*
+                    </small>
+                    <div style="position: absolute; top: -50px; left: -50px; width: 100px; height: 100px; border: 1px solid rgba(255,0,110,0.3); border-radius: 50%; animation: ripple 3s infinite;"></div>
+                    <div style="position: absolute; bottom: -30px; right: -30px; width: 60px; height: 60px; border: 1px solid rgba(131,56,236,0.3); border-radius: 50%; animation: ripple 2.5s infinite 0.5s;"></div>
+                </div>
+                <style>
+                    @keyframes pulse {
+                        0%, 100% { transform: scale(1); }
+                        50% { transform: scale(1.1); }
+                    }
+                    @keyframes ripple {
+                        0% { transform: scale(0.8); opacity: 1; }
+                        100% { transform: scale(2); opacity: 0; }
+                    }
+                </style>
+            `;
+            
+            document.body.appendChild(overlay);
+            setTimeout(() => overlay.style.opacity = '1', 100);
+            
+            overlay.addEventListener('click', () => {
+                overlay.style.opacity = '0';
+                setTimeout(() => document.body.removeChild(overlay), 800);
+            });
+            
+            if (!achievements.existentialCrisis) {
+                setTimeout(() => {
+                    triggerAchievement("Reality Check", "You've stared into the void and the void stared back. It's judging your purchases and finding them wanting.");
+                    achievements.existentialCrisis = true;
+                }, 2000);
+            }
+        }
+
+        // Advanced notification system with personality disorders
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            const notificationTypes = [
+                { bg: 'rgba(255, 0, 110, 0.9)', border: 'rgba(255, 0, 110, 0.3)' },
+                { bg: 'rgba(131, 56, 236, 0.9)', border: 'rgba(131, 56, 236, 0.3)' },
+                { bg: 'rgba(58, 134, 255, 0.9)', border: 'rgba(58, 134, 255, 0.3)' },
+                { bg: 'rgba(6, 255, 165, 0.9)', border: 'rgba(6, 255, 165, 0.3)' }
+            ];
+            const type = notificationTypes[Math.floor(Math.random() * notificationTypes.length)];
+            
+            notification.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.8);
+                background: ${type.bg};
+                color: white;
+                padding: 1.5rem 2.5rem;
+                border-radius: 15px;
+                border: 1px solid ${type.border};
+                backdrop-filter: blur(15px);
+                z-index: 3000;
+                font-size: 1.1rem;
+                font-weight: 500;
+                pointer-events: none;
+                opacity: 0;
+                transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+                text-align: center;
+                max-width: 400px;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Dramatic entrance
+            setTimeout(() => {
+                notification.style.opacity = '1';
+                notification.style.transform = 'translate(-50%, -50%) scale(1)';
+            }, 100);
+            
+            // Fade out and remove
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translate(-50%, -50%) scale(0.8)';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                }, 400);
+            }, 2500);
+        }
+
+        function openModal() {
+            document.getElementById('addItemModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('addItemModal').style.display = 'none';
+        }
+
+        // Enhanced stats with more psychological damage tracking
+        function updateStats() {
+            document.getElementById('totalShame').textContent = totalShame.toFixed(0);
+            
+            // Update other stats with more drama
+            const stats = document.querySelectorAll('.stat-number');
+            stats[0].textContent = currentItems.length;
+            stats[1].textContent = Math.floor(currentItems.length * 0.78); // Assume 78% unopened because we're realistic pessimists
+            
+            // Add some random fluctuation to make it feel alive and judgmental
+            const existentialDread = Math.floor(Math.random() * 5) + 1;
+            stats[2].innerHTML = '∞' + '<small style="font-size: 0.6rem; color: #666;">+' + existentialDread + '</small>';
+        }
+
+        // Enhanced form submission with achievement system
+        document.getElementById('addItemForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('itemName').value;
+            const description = document.getElementById('itemDescription').value;
+            const price = parseFloat(document.getElementById('itemPrice').value);
+            const emoji = document.getElementById('itemEmoji').value || "🤷";
+            
+            const sarcasticQuotes = [
+                "Another fine addition to the collection of questionable decisions.",
+                "Your future self will definitely thank you for this one.",
+                "This is why Amazon loves you more than your own family.",
+                "Peak human decision-making right here, folks.",
+                "Money well spent, surely. Your bank account disagrees.",
+                "The definition of 'treating yourself' has really evolved, hasn't it?",
+                "Future archaeologists will be deeply confused by this purchase.",
+                "Capitalism's favorite customer strikes again.",
+                "Self-control is overrated anyway, who needs financial stability?",
+                "Your bank account has left the chat and blocked your number.",
+                "At least you're consistent in your beautiful inconsistency.",
+                "This is why we can't have nice things... or savings accounts.",
+                "Your impulse control is impressively absent, almost artistic really.",
+                "The raccoon plush is judging this decision and it's disappointed.",
+                "Even your abandoned hobbies are concerned about this purchase."
+            ];
+            
+            const newItem = {
+                emoji: emoji,
+                title: name,
+                description: description,
+                price: price,
+                quote: sarcasticQuotes[Math.floor(Math.random() * sarcasticQuotes.length)]
+            };
+            
+            currentItems.unshift(newItem);
+            galleryItems.unshift(newItem); // Add to original array too
+            totalShame += price;
+            
+            renderGallery();
+            updateStats();
+            closeModal();
+            
+            // Reset form
+            document.getElementById('addItemForm').reset();
+            
+            // Achievement checks with more personality
+            if (!achievements.firstPurchase) {
+                triggerAchievement("First Confession", "Welcome to the gallery of shame! Your honesty is refreshing and concerning.");
+                achievements.firstPurchase = true;
+            }
+            
+            if (price > 200 && !achievements.bigSpender) {
+                triggerAchievement("Big Spender", "You've unlocked premium regret tier! Your bank account is filing a restraining order.");
+                achievements.bigSpender = true;
+            }
+            
+            if (currentItems.length >= 15 && !achievements.collectionComplete) {
+                triggerAchievement("Collector's Edition", "You've built a shrine to poor decisions! The raccoon plush is proud but concerned.");
+                achievements.collectionComplete = true;
+            }
+            
+            updateDopamineMeter();
+        });
+
+        // Floating quotes with more variety and existential dread
+        function createFloatingQuote() {
+            const quotes = [
+                "still better than therapy",
+                "money can't buy happiness but...",
+                "treating myself",
+                "I deserve this",
+                "just this once",
+                "it was on sale",
+                "investment in myself",
+                "self-care",
+                "you only live once",
+                "but it has good reviews",
+                "free shipping though",
+                "what if I need it later",
+                "it's practically paying me",
+                "I'll use it eventually",
+                "my cart is crying",
+                "Amazon knows me",
+                "dopamine deficiency",
+                "executive dysfunction",
+                "impulse control who",
+                "accountability raccoon",
+                "3am decisions",
+                "future me problem",
+                "hyperfocus activated",
+                "emotional support purchase",
+                "but the algorithm recommended it",
+                "treating my inner child",
+                "manifesting abundance",
+                "supporting small business",
+                "carbon footprint who",
+                "Marie Kondo can't see this",
+                "minimalism is overrated",
+                "maximalist energy",
+                "dopamine go brrr",
+                "ADHD tax",
+                "executive function not found",
+                "serotonin machine broke",
+                "capitalism wins again",
+                "bezos needs a new yacht"
+            ];
+            
+            const quote = document.createElement('div');
+            quote.className = 'floating-quote';
+            quote.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+            quote.style.left = Math.random() * 100 + '%';
+            quote.style.animationDuration = (12 + Math.random() * 16) + 's';
+            quote.style.animationDelay = Math.random() * 8 + 's';
+            quote.style.fontSize = (0.6 + Math.random() * 0.4) + 'rem';
+            
+            // Random colors for more chaos
+            const colors = [
+                'rgba(255, 0, 110, 0.1)', 
+                'rgba(131, 56, 236, 0.1)', 
+                'rgba(58, 134, 255, 0.1)', 
+                'rgba(6, 255, 165, 0.1)',
+                'rgba(255, 71, 87, 0.1)',
+                'rgba(255, 159, 28, 0.1)'
+            ];
+            quote.style.color = colors[Math.floor(Math.random() * colors.length)];
+            
+            document.querySelector('.floating-quotes').appendChild(quote);
+            
+            // Remove after animation
+            setTimeout(() => {
+                if (quote.parentNode) {
+                    quote.parentNode.removeChild(quote);
+                }
+            }, 28000);
+        }
+
+        // Konami code for super secret chaos mode
+        let konamiCode = [];
+        const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // ↑↑↓↓←→←→BA
+        
+        document.addEventListener('keydown', function(e) {
+            konamiCode.push(e.keyCode);
+            if (konamiCode.length > konamiSequence.length) {
+                konamiCode.shift();
+            }
+            
+            if (konamiCode.join(',') === konamiSequence.join(',')) {
+                activateSecretMode();
+                konamiCode = [];
+            }
+        });
+
+        function activateSecretMode() {
+            if (achievements.chaosMode) return;
+            
+            document.body.style.animation = 'gradientShift 0.5s ease infinite';
+            document.querySelector('.title').style.animation = 'titleGlow 0.3s ease infinite';
+            
+            showNotification("🎉 MAXIMUM CHAOS MODE ACTIVATED! 🎉 Your ADHD energy has transcended reality!");
+            
+            // Add chaos particles
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => createFloatingQuote(), i * 100);
+            }
+            
+            // Modify all gallery items to have chaotic animations
+            document.querySelectorAll('.gallery-item').forEach((item, index) => {
+                setTimeout(() => {
+                    item.style.animation = 'float 2s ease infinite';
+                    item.style.animationDelay = (index * 0.1) + 's';
+                    
+                    // Add random color shifts
+                    const randomHue = Math.floor(Math.random() * 360);
+                    item.style.filter = `hue-rotate(${randomHue}deg) brightness(1.2) saturate(1.3)`;
+                }, index * 50);
+            });
+            
+            // Add screen shake
+            document.body.style.animation += ', screenShake 0.1s infinite';
+            
+            // Create CSS for screen shake if it doesn't exist
+            if (!document.getElementById('chaosStyles')) {
+                const style = document.createElement('style');
+                style.id = 'chaosStyles';
+                style.textContent = `
+                    @keyframes screenShake {
+                        0% { transform: translateX(0); }
+                        25% { transform: translateX(-2px); }
+                        50% { transform: translateX(2px); }
+                        75% { transform: translateX(-1px); }
+                        100% { transform: translateX(0); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            triggerAchievement("Chaos Master", "You've unlocked the secret mode. Your ADHD energy is now weaponized. The raccoon plush is concerned.");
+            achievements.chaosMode = true;
+            
+            // Calm down after 10 seconds
+            setTimeout(() => {
+                document.body.style.animation = 'gradientShift 15s ease infinite';
+                document.querySelector('.title').style.animation = 'titleGlow 2s ease-in-out infinite alternate';
+                document.querySelectorAll('.gallery-item').forEach(item => {
+                    item.style.animation = '';
+                    item.style.filter = '';
+                });
+            }, 10000);
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('addItemModal');
+            if (e.target === modal) {
+                closeModal();
+            }
+            
+            const hyperfocus = document.getElementById('hyperfocusOverlay');
+            if (e.target === hyperfocus) {
+                toggleHyperfocus();
+            }
+        });
+
+        // Initialize the beautiful chaos
+        renderGallery();
+        updateStats();
+        
+        // Create floating quotes periodically with increasing chaos
+        setInterval(createFloatingQuote, 4000);
+        
+        // Initial floating quotes
+        for (let i = 0; i < 10; i++) {
+            setTimeout(createFloatingQuote, i * 800);
+        }
+
+        // Dynamic shame counter updates with more personality
+        setInterval(() => {
+            const variation = (Math.random() - 0.5) * 3.5;
+            totalShame += variation;
+            document.getElementById('totalShame').textContent = totalShame.toFixed(0);
+            
+            // Occasionally trigger existential moments
+            if (Math.random() < 0.001) {
+                const existentialMoments = [
+                    "Your bank account just shed a single tear.",
+                    "Amazon stock went up 0.001% because of you.",
+                    "A minimalist just felt a disturbance in the force.",
+                    "Your future self is writing passive-aggressive notes.",
+                    "The raccoon plush just gained sentience.",
+                    "Your abandoned hobbies formed a union.",
+                    "Marie Kondo is questioning her life choices.",
+                    "Your credit card is filing for emotional support."
+                ];
+                showNotification(existentialMoments[Math.floor(Math.random() * existentialMoments.length)]);
+            }
+        }, 3000);
+
+        // Enhanced keyboard shortcuts for maximum ADHD efficiency
+        document.addEventListener('keydown', function(e) {
+            // Escape to close everything
+            if (e.key === 'Escape') {
+                closeModal();
+                if (hyperfocusActive) toggleHyperfocus();
+            }
+            
+            // Ctrl+N for new item (because ADHD brains love shortcuts)
+            if (e.key === 'n' && e.ctrlKey) {
+                e.preventDefault();
+                openModal();
+            }
+            
+            // Ctrl+H for hyperfocus mode
+            if (e.key === 'h' && e.ctrlKey) {
+                e.preventDefault();
+                toggleHyperfocus();
+            }
+            
+            // Ctrl+T for therapy mode
+            if (e.key === 't' && e.ctrlKey) {
+                e.preventDefault();
+                startTherapyMode();
+            }
+            
+            // Ctrl+R for existential crisis
+            if (e.key === 'r' && e.ctrlKey) {
+                e.preventDefault();
+                triggerEasterEgg();
+            }
+            
+            // Ctrl+S for random sort (because why not)
+            if (e.key === 's' && e.ctrlKey) {
+                e.preventDefault();
+                sortGallery('random');
+            }
+            
+            // Space bar for random encouragement/discouragement
+            if (e.key === ' ' && !e.target.matches('input, textarea')) {
+                e.preventDefault();
+                const randomEncouragement = [
+                    "You're doing great! (at spending money)",
+                    "Keep going! (your bank account disagrees)",
+                    "Self-care is important! (so is financial stability)",
+                    "You deserve this! (your future self says otherwise)",
+                    "YOLO! (Your Overdraft Limits are Overextended)",
+                    "Treat yourself! (to some financial responsibility)",
+                    "Live your truth! (your truth is expensive)",
+                    "Follow your dreams! (to the clearance section)"
+                ];
+                showNotification(randomEncouragement[Math.floor(Math.random() * randomEncouragement.length)]);
+            }
+        });
+
+        // Random encouraging/discouraging messages with more frequency and chaos
+        const randomMessages = [
+            "Your shopping cart misses you and is writing poetry about abandonment.",
+            "Amazon stock just went up 0.01% because of your mere existence.",
+            "Your abandoned hobbies are hosting a reunion and you're not invited.",
+            "That planner is still optimistic about your potential for organization.",
+            "Your bank account is writing haikus about financial loss.",
+            "Somewhere, a minimalist is crying and they don't know why.",
+            "Your impulse control has filed for unemployment benefits.",
+            "The raccoon plush achieved sentience and is now judging your life choices.",
+            "Your future self just rage-quit the timeline.",
+            "Capitalism thanks you for your service to the economy.",
+            "Your credit card company is concerned about your wellbeing (and their profits).",
+            "The fog machine is plotting its revenge for being underutilized.",
+            "Your highlighters have formed a union of disappointment.",
+            "Marie Kondo just felt a disturbance in the organization force.",
+            "Your abandoned art supplies are writing a memoir called 'Three Days of Hope'.",
+            "The therapy llama is considering charging you actual therapy rates.",
+            "Your habit tracker app is tracking the habit of not using habit trackers."
+        ];
+
+        setInterval(() => {
+            if (Math.random() < 0.08) { // 8% chance every interval for more chaos
+                const message = randomMessages[Math.floor(Math.random() * randomMessages.length)];
+                showNotification(message);
+            }
+        }, 8000);
+
+        // Add some visual chaos to gallery items periodically
+        function addChaosToGallery() {
+            const items = document.querySelectorAll('.gallery-item');
+            items.forEach((item, index) => {
+                setTimeout(() => {
+                    const randomHue = Math.floor(Math.random() * 360);
+                    item.style.filter = `hue-rotate(${randomHue}deg) brightness(1.1) saturate(1.2)`;
+                    
+                    setTimeout(() => {
+                        item.style.filter = '';
+                    }, 2000);
+                }, index * 200);
+            });
+        }
+
+        // Trigger chaos occasionally for maximum ADHD stimulation
+        setInterval(() => {
+            if (Math.random() < 0.03) { // 3% chance
+                addChaosToGallery();
+            }
+        }, 12000);
+
+        // Add a secret click counter for the easter egg
+        let easterEggClicks = 0;
+        document.querySelector('.easter-egg').addEventListener('click', () => {
+            easterEggClicks++;
+            if (easterEggClicks >= 5 && !achievements.existentialCrisis) {
+                triggerAchievement("Glutton for Punishment", "You've clicked the existential crisis button 5 times. Are you okay? Do you need a hug?");
+            }
+        });
+
+        // Add some motivational messages when people try to add items
+        document.getElementById('itemName').addEventListener('focus', () => {
+            if (Math.random() < 0.3) {
+                showNotification("Remember: honesty is the first step to financial recovery... or deeper debt.");
+            }
+        });
+
+        // Console easter egg for the developers at heart
+        console.log(`
+        ╔═══════════════════════════════════════════════════════════════╗
+        ║                                                               ║
+        ║   🦝 CONGRATULATIONS! You found the developer easter egg! 🦝  ║
+        ║                                                               ║
+        ║   You're clearly as distractible as the people this site      ║
+        ║   was designed for. Welcome to the club of beautiful          ║
+        ║   disasters and questionable life choices.                    ║
+        ║                                                               ║
+        ║   Try typing: showMeTheChaos()                               ║
+        ║                                                               ║
+        ╚═══════════════════════════════════════════════════════════════╝
+        `);
+
+        // Secret console function
+        window.showMeTheChaos = function() {
+            activateSecretMode();
+            console.log("🎉 CHAOS MODE ACTIVATED! Your ADHD energy is now weaponized! 🎉");
+            return "The raccoon plush is judging your developer curiosity.";
+        };
+
+        // Add a helpful tooltip system for maximum hand-holding
+        function addTooltips() {
+            const tooltips = {
+                '.add-item-btn': 'Add your latest regrettable purchase to the hall of shame',
+                '.therapy-mode': 'Confront your shopping demons (not recommended)',
+                '.hyperfocus-mode': 'Deep dive into your psychological shopping patterns',
+                '.easter-egg': 'Click for premium existential dread (side effects may include clarity)',
+                '.shame-counter': 'Your running total of beautiful mistakes'
+            };
+
+            Object.entries(tooltips).forEach(([selector, text]) => {
+                const element = document.querySelector(selector);
+                if (element) {
+                    element.title = text;
+                }
+            });
+        }
+
+        addTooltips();
+
+        // Final touch: add some ambient sound effects (just kidding, this is HTML/CSS/JS)
+        // But we can add some visual "sound effects"
+        function addVisualSoundEffect() {
+            const effects = ['✨', '💫', '🌟', '⭐', '💥', '🎆', '🎇'];
+            const effect = document.createElement('div');
+            effect.textContent = effects[Math.floor(Math.random() * effects.length)];
+            effect.style.cssText = `
+                position: fixed;
+                top: ${Math.random() * 100}%;
+                left: ${Math.random() * 100}%;
+                font-size: 2rem;
+                pointer-events: none;
+                z-index: 1000;
+                animation: sparkle 2s ease-out forwards;
+            `;
+            
+            if (!document.getElementById('sparkleStyles')) {
+                const style = document.createElement('style');
+                style.id = 'sparkleStyles';
+                style.textContent = `
+                    @keyframes sparkle {
+                        0% { opacity: 0; transform: scale(0) rotate(0deg); }
+                        50% { opacity: 1; transform: scale(1) rotate(180deg); }
+                        100% { opacity: 0; transform: scale(0) rotate(360deg); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(effect);
+            setTimeout(() => {
+                if (document.body.contains(effect)) {
+                    document.body.removeChild(effect);
+                }
+            }, 2000);
+        }
+
+        // Occasionally add sparkles because why not
+        setInterval(() => {
+            if (Math.random() < 0.02) {
+                addVisualSoundEffect();
+            }
+        }, 5000);
+
+        // Welcome message for first-time visitors
+        setTimeout(() => {
+            showNotification("Welcome to your digital museum of questionable decisions! Click around and embrace the chaos.");
+        }, 2000);
+
+    </script>
+</body>
+</html>
